@@ -14,7 +14,7 @@ pub trait TryFromIterator<A> {
         Self: Sized;
 }
 
-fn try_from_iter<I, T, const N: usize>(iter: I) -> Result<[T; N], NotEnoughItems>
+fn try_from_iter<I, T, const N: usize>(iter: I) -> Option<[T; N]>
 where
     I: IntoIterator<Item = T>,
 {
@@ -26,11 +26,11 @@ where
         if let Some(next) = iter.next() {
             unsafe { ptr.add(i).write(next) };
         } else {
-            return Err(NotEnoughItems);
+            return None;
         }
     }
 
-    Ok(unsafe { buffer.assume_init() })
+    Some(unsafe { buffer.assume_init() })
 }
 
 impl<T, const N: usize> TryFromIterator<T> for [T; N] {
@@ -40,7 +40,7 @@ impl<T, const N: usize> TryFromIterator<T> for [T; N] {
     where
         I: IntoIterator<Item = T>,
     {
-        try_from_iter(iter)
+        try_from_iter(iter).ok_or(NotEnoughItems)
     }
 }
 
