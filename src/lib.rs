@@ -64,17 +64,27 @@ pub trait Array<Idx = usize>:
     + IndexMut<Idx>
     + Clone
 {
+    fn len(&self) -> usize;
+    fn is_empty(&self) -> bool;
 }
 
-impl<Idx, T, U> Array<Idx> for T where
+impl<Idx, T, U> Array<Idx> for T
+where
     T: TryFromIterator<U>
         + IntoIterator<Item = U>
         + AsRef<[Self::Item]>
         + AsMut<[Self::Item]>
         + Index<Idx, Output = U>
         + IndexMut<Idx>
-        + Clone
+        + Clone,
 {
+    fn len(&self) -> usize {
+        self.as_ref().len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.as_ref().is_empty()
+    }
 }
 
 #[cfg(test)]
