@@ -20,7 +20,7 @@ where
 {
     let mut iter = iter.into_iter();
     let mut buffer = mem::MaybeUninit::<[T; N]>::uninit();
-    let ptr: *mut T = unsafe { mem::transmute(&mut buffer) };
+    let ptr = &mut buffer as *mut mem::MaybeUninit<[T; N]> as *mut T;
 
     for i in 0..N {
         if let Some(next) = iter.next() {
@@ -90,6 +90,13 @@ where
 #[cfg(test)]
 mod tests {
     use super::Array;
+    use super::TryFromIterator;
+
+    #[test]
+    fn try_from_iter() {
+        let array = <[_; 5]>::try_from_iter([0, 1, 2, 3, 4].into_iter()).unwrap();
+        assert_eq!(&array, &[0, 1, 2, 3, 4]);
+    }
 
     fn as_slice<A: Array>(array: &A) -> &[A::Item] {
         array.as_ref()
