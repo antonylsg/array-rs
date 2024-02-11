@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn try_from_iter() {
-        let array = <[_; 5]>::try_from_iter([0, 1, 2, 3, 4].into_iter()).unwrap();
+        let array = <[_; 5]>::try_from_iter([0, 1, 2, 3, 4]).unwrap();
         assert_eq!(&array, &[0, 1, 2, 3, 4]);
     }
 
